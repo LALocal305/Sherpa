@@ -35,8 +35,8 @@ public class SherpaListener extends ListenerAdapter{
 	        if (msg.equals("?ping"))
 		    {
 		        //channel.sendMessage(BuildTestEmbed(event)).queue();
-	        	channel.sendMessage("pong!").queue();
-	        	//channel.deleteMessageById(message.getId()).queueAfter(5, TimeUnit.SECONDS));
+	        		channel.sendMessage("pong!").queue();
+	        		//channel.deleteMessageById(message.getId()).queueAfter(5, TimeUnit.SECONDS);
 		    }
 	        else if (msg.equals("?inv"))
 	        {	
