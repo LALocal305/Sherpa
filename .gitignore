@@ -1,0 +1,14 @@
+*.propConfs
+*.class
+*.log
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+/.settings/
+*.launch
+*.target
+
+/target/
