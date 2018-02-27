@@ -31,8 +31,8 @@ public class Sherpa
 			e1.printStackTrace();
 		}
     	
-    	//String token = log.getProperty("token");
-    	String token = System.getenv().get("token");
+    	String token = log.getProperty("token");
+    	//String token = System.getenv().get("token");
         try
         {
             JDA jda = new JDABuilder(AccountType.BOT)

@@ -34,7 +34,10 @@ public class SherpaListener extends ListenerAdapter{
     	embed.addField("Weight", "1lb", true);
     	embed.setThumbnail("https://i.imgur.com/wkJx2vQ.png");
     	//embed.setImage("https://i.imgur.com/wkJx2vQ.png");
+    	//https://i.imgur.com/7p7mtov.png - backpack
     	
     	return embed.build();
     }
+    
+
 }
