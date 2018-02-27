@@ -1,4 +1,4 @@
-package org.botCreators.SherpaBot.Sherpa.Listener;
+package org.botCreators.SherpaBot.Sherpa.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.nio.file.Paths;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CommandForwarder {
+public class CommandParser {
 
-	public CommandForwarder(){
+	public CommandParser(){
 
 	}
 	
@@ -21,7 +21,7 @@ public class CommandForwarder {
 			
 		}
 		
-		if(cmd.equals("one")) {
+		if(cmd.equals("test")) {
 			event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue(); //@<person>
 			event.getChannel().sendMessage(event.getAuthor().getName()).queue(); //accountName
 			event.getChannel().sendMessage(event.getAuthor().getId()).queue(); //bunch of digits
@@ -33,7 +33,13 @@ public class CommandForwarder {
 			System.out.println(s);
 		}
 		
-		if(cmd.equals("two")) { //create inventory stub
+		if(cmd.equals("inv")){
+			
+			ManageInventory mi = new ManageInventory(event, cmd);
+			mi.HandleEvent();
+		}
+		
+		/*if(cmd.equals("create")) { //create inventory stub
 			//file name is BaseDirPath/Server_Id/Author_Id/name
 			String server = event.getGuild().getId();
 			String name = event.getAuthor().getName();
@@ -45,8 +51,8 @@ public class CommandForwarder {
 			try {
 				Files.createDirectories(Paths.get(path));
 				
-				event.getChannel().sendMessage(ec.BuildSimpleEmbed(event, "Stub Created", "Inventory stub created for "
-						+ event.getMember().getNickname())).queue();
+				event.getChannel().sendMessage(ec.BuildSimpleEmbed(event, "Empty Inventory Created", 
+						"Now tracking inventory for " + event.getMember().getNickname())).queue();
 				
 				File f = new File(path + "/" + name + disc + ".json");
 				f.createNewFile();
@@ -55,7 +61,7 @@ public class CommandForwarder {
 			}
 		}
 		
-		if(cmd.equals("three")) { //delete inventory stub
+		if(cmd.equals("delete")) { //delete inventory stub
 			String server = event.getGuild().getId();
 			String name = event.getAuthor().getName();
 			String disc = event.getAuthor().getDiscriminator();
@@ -66,14 +72,14 @@ public class CommandForwarder {
 				File f = new File(path + "/" + name + disc + ".json");
 				
 				if(f.delete()){
-					event.getChannel().sendMessage("Inventory stub removed.").queue();
+					event.getChannel().sendMessage("Inventory system deleted").queue();
 				} else {
 					event.getChannel().sendMessage("You don't have an inventory yet. Use `?create` first.").queue();
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 	/*
 	 if (msg.equals("?ping"))

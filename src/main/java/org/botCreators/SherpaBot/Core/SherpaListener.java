@@ -1,6 +1,8 @@
-package org.botCreators.SherpaBot.Sherpa.Listener;
+package org.botCreators.SherpaBot.Core;
 
 import java.awt.Color;
+
+import org.botCreators.SherpaBot.Sherpa.Utility.CommandParser;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -19,7 +21,7 @@ public class SherpaListener extends ListenerAdapter{
 			{ 
         		String command = msg.substring(1);
         		
-        		CommandForwarder.Forward(event, command);
+        		CommandParser.Forward(event, command);
 			}
         }
     }

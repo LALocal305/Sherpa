@@ -1,4 +1,4 @@
-package org.botCreators.SherpaBot.Sherpa;
+package org.botCreators.SherpaBot.Sherpa.Utility;
 
 public class Item {
 	private String owner;

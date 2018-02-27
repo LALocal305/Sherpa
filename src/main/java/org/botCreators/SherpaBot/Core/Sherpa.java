@@ -1,4 +1,4 @@
-package org.botCreators.SherpaBot.Sherpa;
+package org.botCreators.SherpaBot.Core;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
-
-import org.botCreators.SherpaBot.Sherpa.Listener.SherpaListener;
 
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
