@@ -15,7 +15,7 @@ public class DatabaseManager {
 	
 	private String username;
 	private String password;
-	private String url = "jdbc:mysql://localhost:3306/sherpa_bot";
+	private String url;
 	
 	private Properties populateProperties(){
 		if (props == null){

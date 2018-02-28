@@ -4,27 +4,35 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.botCreators.SherpaBot.Commands.UserCommand;
+
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandParser {
-
+	
+	private UserCommand cuc;
 	
 	public CommandParser(){
-
+		cuc = new UserCommand();
 	}
 	
-	static public void Forward(MessageReceivedEvent event, String cmd){
+	public void Forward(MessageReceivedEvent event, String[] args){
 		//EmbedCreator ec = new EmbedCreator();
-		if(cmd.equals("ping")) {
+		
+		if(args[0].equals("user") || args[0].equals("u")){
+			cuc.onCommand(event, args);
+		}
+		
+		if(args[0].equals("ping")) {
 
 			event.getChannel().sendMessage("pong").queue();
 			
 		}
 		
-		if(cmd.equals("help")) {
+		if(args[0].equals("help")) {
 			User author = event.getAuthor();
 			Message message = event.getMessage();
 			MessageChannel channel = event.getChannel();
@@ -37,7 +45,7 @@ public class CommandParser {
 			
 		}
 		
-		if(cmd.equals("test")) {
+		/*if(cmd.equals("test")) {
 			event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue(); //@<person>
 			event.getChannel().sendMessage(event.getAuthor().getName()).queue(); //accountName
 			event.getChannel().sendMessage(event.getAuthor().getId()).queue(); //bunch of digits
@@ -47,9 +55,9 @@ public class CommandParser {
 			
 			String s = event.getAuthor().getAsMention();
 			System.out.println(s);
-		}
+		}*/
 		
-		if(cmd.equals("inv")){
+		if(args[0].equals("inv")){ //TODO: THIS IS FOR TESTING ONLY
 			DatabaseManager dbm = new DatabaseManager();
 			
 			String sql = "select * from user";
@@ -58,8 +66,16 @@ public class CommandParser {
 				PreparedStatement ps = dbm.connect().prepareStatement(sql);
 				ResultSet rs = ps.executeQuery();
 				
-				while(rs.next()){
-					System.out.println("Something happened.");
+				try {
+					while(rs.next()){
+						System.out.println("Something happened.");
+					}
+					event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} finally {
+					ps.close();
+					rs.close();
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();

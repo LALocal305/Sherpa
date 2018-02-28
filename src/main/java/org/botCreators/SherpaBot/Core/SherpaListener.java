@@ -1,15 +1,16 @@
 package org.botCreators.SherpaBot.Core;
 
-import java.awt.Color;
+import java.util.StringTokenizer;
 
 import org.botCreators.SherpaBot.Sherpa.Utility.CommandParser;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class SherpaListener extends ListenerAdapter{
+	
+	CommandParser parser = new CommandParser();
+	
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
@@ -19,14 +20,28 @@ public class SherpaListener extends ListenerAdapter{
             
         	if (msg.startsWith("?"))
 			{ 
-        		String command = msg.substring(1);
+        		//String command = msg.substring(1);
         		
-        		CommandParser.Forward(event, command);
+        		parser.Forward(event, parseCommand(msg.substring(1)));
 			}
         }
     }
     
-    public MessageEmbed BuildTestEmbed(MessageReceivedEvent e){
+    private String[] parseCommand(String str){
+		String[] parsed;
+		
+		StringTokenizer st = new StringTokenizer(str, "-");
+		parsed = new String[st.countTokens()];
+		
+		int i = 0;
+		while(st.hasMoreTokens()){
+			parsed[i++] = st.nextToken();
+		}
+    	
+		return parsed;
+    }
+    
+   /*public MessageEmbed BuildTestEmbed(MessageReceivedEvent e){
     	EmbedBuilder embed = new EmbedBuilder();
     	
     	embed.setAuthor(e.getAuthor().getName(), null, e.getAuthor().getEffectiveAvatarUrl());
@@ -40,6 +55,6 @@ public class SherpaListener extends ListenerAdapter{
     	
     	return embed.build();
     }
-    
+    */
 
 }
