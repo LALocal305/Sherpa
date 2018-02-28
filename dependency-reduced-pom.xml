@@ -22,7 +22,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>org.botCreators.SherpaBot.Sherpa</mainClass>
+              <mainClass>org.botCreators.SherpaBot.Sherpa.Sherpa</mainClass>
             </manifest>
           </archive>
         </configuration>

@@ -1,23 +1,39 @@
 package org.botCreators.SherpaBot.Sherpa.Utility;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandParser {
 
+	
 	public CommandParser(){
 
 	}
 	
 	static public void Forward(MessageReceivedEvent event, String cmd){
-		EmbedCreator ec = new EmbedCreator();
+		//EmbedCreator ec = new EmbedCreator();
 		if(cmd.equals("ping")) {
 
 			event.getChannel().sendMessage("pong").queue();
+			
+		}
+		
+		if(cmd.equals("help")) {
+			User author = event.getAuthor();
+			Message message = event.getMessage();
+			MessageChannel channel = event.getChannel();
+			
+			author.openPrivateChannel().queue( 
+					pChannel -> {
+						pChannel.sendMessage(author.getName()).queue();
+						channel.deleteMessageById(message.getId()).queue();
+				});
 			
 		}
 		
@@ -34,9 +50,22 @@ public class CommandParser {
 		}
 		
 		if(cmd.equals("inv")){
+			DatabaseManager dbm = new DatabaseManager();
 			
-			ManageInventory mi = new ManageInventory(event, cmd);
-			mi.HandleEvent();
+			String sql = "select * from user";
+			
+			try {
+				PreparedStatement ps = dbm.connect().prepareStatement(sql);
+				ResultSet rs = ps.executeQuery();
+				
+				while(rs.next()){
+					System.out.println("Something happened.");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				dbm.disconnect(); 
+			}
 		}
 		
 		/*if(cmd.equals("create")) { //create inventory stub

@@ -1,5 +1,5 @@
 package org.botCreators.SherpaBot.Commands;
 
-public class CreateFromExistingCommand {
+public class CreateFromExistingInvCommand {
 
 }

@@ -9,10 +9,10 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class EmbedCreator extends ListenerAdapter {
 	
-    public MessageEmbed BuildSimpleEmbed(MessageReceivedEvent e, String title, String desc){
+    public MessageEmbed BuildSimpleEmbed(MessageReceivedEvent event, String title, String desc){
     	EmbedBuilder embed = new EmbedBuilder();
     	
-    	embed.setAuthor(e.getMember().getNickname(), null, e.getAuthor().getEffectiveAvatarUrl());
+    	embed.setAuthor(event.getMember().getNickname(), null, event.getAuthor().getEffectiveAvatarUrl());
     	embed.setColor(Color.GREEN);
     	embed.setTitle(title);
     	embed.setDescription(desc);

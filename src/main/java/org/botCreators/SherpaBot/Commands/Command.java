@@ -1,5 +1,12 @@
 package org.botCreators.SherpaBot.Commands;
 
-public class Command {
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+public abstract class Command {
+	
+	public abstract void onCommand(MessageReceivedEvent event, String[] args);
+	public abstract String getDescription();
+	public abstract String getName();
+	public abstract String getUsage();
+	
 }
