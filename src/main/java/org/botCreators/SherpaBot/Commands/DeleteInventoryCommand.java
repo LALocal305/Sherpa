@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class DeleteInventoryCommand extends Command {
 
 	@Override
-	public void onCommand(MessageReceivedEvent event, String[] args) {
+	public void onCommand(MessageReceivedEvent event, String[] args, String command) {
 		String server = event.getGuild().getId();
 		String name = event.getAuthor().getName();
 		String disc = event.getAuthor().getDiscriminator();

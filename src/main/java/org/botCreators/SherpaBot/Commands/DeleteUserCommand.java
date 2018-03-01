@@ -5,7 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class DeleteUserCommand extends Command {
 ///////////OLD NEWS NEST UNDER USERCOMMAND.JAVA
 	@Override
-	public void onCommand(MessageReceivedEvent event, String[] args) {
+	public void onCommand(MessageReceivedEvent event, String[] args, String command) {
 		// TODO Auto-generated method stub
 		
 	}

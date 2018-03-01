@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.botCreators.SherpaBot.Sherpa.Utility.DatabaseManager;
+import org.botCreators.SherpaBot.Sherpa.Utility.TableCols;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -14,21 +15,24 @@ public class UserCommand extends Command {
 	private HashMap<String, String> argMap;
 	
 	@Override
-	public void onCommand(MessageReceivedEvent event, String[] args) {
+	public void onCommand(MessageReceivedEvent event, String[] args, String command) {
 		
 		argMap = new HashMap<>();
 		this.parseArgs(args);
 
-		if(args[1].equals("create") || args[1].equals("c") ){
-			create(event, args);
-		} else if(args[1].equals("delete") || args[1].equals("d") ){
-			delete(event, args);
-		} else if(args[1].equals("mod") || args[1].equals("m") ){
-			mod(event, args);
-		} else {
-			event.getChannel().sendMessage("Invalid command received for message: `" + event.getMessage().getContent() +  "`").queue();
-		}
+		printArray(args);
 		
+		if(argMap.containsKey(command)){
+			if(argMap.get(command).equals("create") || argMap.get(command).equals("c") ){
+				create(event, args);
+			} else if(argMap.get(command).equals("delete") || argMap.get(command).equals("d") ){
+				delete(event, args);
+			} else if(argMap.get(command).equals("mod") || argMap.get(command).equals("m") ){
+				mod(event, args);
+			} else {
+				event.getChannel().sendMessage("Invalid command received for message: `" + event.getMessage().getContent() +  "`. Are you forgetting an argument?").queue();
+			}
+		}
 	}
 	
 	/**
@@ -40,45 +44,35 @@ public class UserCommand extends Command {
 	 * @param args - The String array that contains the command and arguments
 	 */
 	private void create(MessageReceivedEvent event, String[] args){
-		if(argMap.containsKey("name")){
+		System.out.print("create: ");printArray(args);
+		if(argMap.containsKey("n")){
 			if(userExists(event)){
 				//Send Message that user already exists.
-				event.getChannel().sendMessage("A character with the name `" + argMap.get("name") + "` already exists.").queue();
+				event.getChannel().sendMessage("A character with the name `" + argMap.get("n") + "` already exists.").queue();
 			} else {
 				//Create a new user in the database.
 				
 				DatabaseManager dbm = new DatabaseManager();
 				String name = event.getAuthor().getName();
 				String disc = event.getAuthor().getDiscriminator();
-				String nickname = argMap.get("name");
+				String nn = argMap.get("n");
 				
-				String sql = "INSERT INTO USER (name, discordName, discordDisc) VALUES () " ;
+				String sql = "INSERT INTO USER (" + TableCols.USER_NN + "," + TableCols.USER_DN + "," + TableCols.USER_DD + 
+						") VALUES (?,?,?) " ;
 				
-				try {
-					PreparedStatement ps = dbm.connect().prepareStatement(sql);
-					ResultSet rs = ps.executeQuery();
+				try (PreparedStatement ps = dbm.connect().prepareStatement(sql);){
 					
-					try {
-						int rowcount = 0;
-						if (rs.last()){
-							rowcount = rs.getRow();
-							rs.beforeFirst();
-						}
-						
-						if (rowcount == 0) {
-							foundUser = false;
-						} else {
-							foundUser = true;
-						}
-						event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					} finally {
-						rs.close();
-						ps.close();
-					}
+					ps.setString(1, nn);
+					ps.setString(2,  name);
+					ps.setString(3, disc);
+					
+					ps.executeUpdate();
+					
+					event.getChannel().sendMessage("User created successfully.").queue();
+					
 				} catch (SQLException e) {
 					e.printStackTrace();
+					event.getChannel().sendMessage("User unable to be created.").queue();
 				} finally {
 					dbm.disconnect(); 
 				}
@@ -105,11 +99,20 @@ public class UserCommand extends Command {
 	 * @param args - The String array that contains the command and arguments
 	 */
 	private void parseArgs(String[] args){
-		for(int i = 0; i < args.length; i++){
-			String temp[] = args[i].split(" ", 2);
-			
-			argMap.put(temp[0], (temp[1].charAt(temp[1].length() -1) == ' ' ? temp[1].substring(0, temp[1].length() -1) : temp[1].substring(0, temp[1].length())));
+		if(args.length > 1) {
+			for(int i = 0; i < args.length; i++){
+				String temp[] = args[i].split(" ", 2);
+				
+				if(temp.length > 1){
+					argMap.put(temp[0], (temp[1].charAt(temp[1].length() -1) == ' ' ? temp[1].substring(0, temp[1].length() -1) : temp[1].substring(0, temp[1].length())));
+				}
+			}
 		}
+	}
+	
+	private void printArray(String[] arr) {
+		for (int i = 0; i < arr.length; i++) 
+			System.out.println(arr[i]);
 	}
 	
 	/**
@@ -124,31 +127,23 @@ public class UserCommand extends Command {
 		DatabaseManager dbm = new DatabaseManager();
 		String name = event.getAuthor().getName();
 		
-		String sql = "select * from user where name =" + name + " and nickname = '" + argMap.get("name") +"'" ;
+		String sql = "select * from user where "+ TableCols.USER_DN + " = '" + name + "' and "+ TableCols.USER_NN + " = '" + argMap.get("n") +"'" ;
 		
-		try {
-			PreparedStatement ps = dbm.connect().prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
-			
-			try {
-				int rowcount = 0;
-				if (rs.last()){
-					rowcount = rs.getRow();
-					rs.beforeFirst();
-				}
-				
-				if (rowcount == 0) {
-					foundUser = false;
-				} else {
-					foundUser = true;
-				}
-				event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				rs.close();
-				ps.close();
+		try (PreparedStatement ps = dbm.connect().prepareStatement(sql);
+				ResultSet rs = ps.executeQuery();){
+
+			int rowcount = 0;
+			if (rs.last()){
+				rowcount = rs.getRow();
+				rs.beforeFirst();
 			}
+			
+			if (rowcount == 0) {
+				foundUser = false;
+			} else {
+				foundUser = true;
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {

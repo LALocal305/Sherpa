@@ -39,7 +39,7 @@ public class Sherpa
                     .buildBlocking();  
             
             Presence presence = jda.getPresence();
-            presence.setGame(Game.of("D&D 5e | ?help"));
+            presence.setGame(Game.of(" the guitar | ?help"));
         }
         catch (LoginException e)
         {

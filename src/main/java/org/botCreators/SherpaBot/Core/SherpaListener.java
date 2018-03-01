@@ -18,28 +18,15 @@ public class SherpaListener extends ListenerAdapter{
         {
             String msg = event.getMessage().getContent();
             
-        	if (msg.startsWith("?"))
+        	if (msg.startsWith("?") && msg.length() > 1)
 			{ 
         		//String command = msg.substring(1);
         		
-        		parser.Forward(event, parseCommand(msg.substring(1)));
+        		parser.Forward(event, msg.substring(1));
 			}
         }
     }
-    
-    private String[] parseCommand(String str){
-		String[] parsed;
-		
-		StringTokenizer st = new StringTokenizer(str, "-");
-		parsed = new String[st.countTokens()];
-		
-		int i = 0;
-		while(st.hasMoreTokens()){
-			parsed[i++] = st.nextToken();
-		}
-    	
-		return parsed;
-    }
+
     
    /*public MessageEmbed BuildTestEmbed(MessageReceivedEvent e){
     	EmbedBuilder embed = new EmbedBuilder();

@@ -14,7 +14,7 @@ public class CreateEmptyInvCommand extends Command {
 	EmbedCreator ec = new EmbedCreator();
 
 	@Override
-	public void onCommand(MessageReceivedEvent event, String[] args) {
+	public void onCommand(MessageReceivedEvent event, String[] args, String command) {
 		//file name is BaseDirPath/Server_Id/Author_Id/name
 		String server = event.getGuild().getId();
 		String name = event.getAuthor().getName();

@@ -1,8 +1,6 @@
 package org.botCreators.SherpaBot.Sherpa.Utility;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.StringTokenizer;
 
 import org.botCreators.SherpaBot.Commands.UserCommand;
 
@@ -14,32 +12,42 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class CommandParser {
 	
 	private UserCommand cuc;
+	private String[] parsed;
 	
 	public CommandParser(){
+		
 		cuc = new UserCommand();
 	}
 	
-	public void Forward(MessageReceivedEvent event, String[] args){
+	public void Forward(MessageReceivedEvent event, String args){
 		//EmbedCreator ec = new EmbedCreator();
 		
-		if(args[0].equals("user") || args[0].equals("u")){
-			cuc.onCommand(event, args);
+		parseCommand(args);
+		
+		String command = "";
+
+		if(parsed[0].contains(" ")) {
+			command = parsed[0].substring(0, parsed[0].indexOf(" ")+1).trim();
 		}
 		
-		if(args[0].equals("ping")) {
+		if(command.equals("user") || command.equals("u")){
+			cuc.onCommand(event, parsed, command);
+		}
+		
+		if(command.equals("ping")) {
 
 			event.getChannel().sendMessage("pong").queue();
 			
 		}
 		
-		if(args[0].equals("help")) {
+		if(command.equals("help")) {
 			User author = event.getAuthor();
 			Message message = event.getMessage();
 			MessageChannel channel = event.getChannel();
 			
 			author.openPrivateChannel().queue( 
 					pChannel -> {
-						pChannel.sendMessage(author.getName()).queue();
+						pChannel.sendMessage(author.getName() + " this is obviously not working.").queue();
 						channel.deleteMessageById(message.getId()).queue();
 				});
 			
@@ -56,76 +64,29 @@ public class CommandParser {
 			String s = event.getAuthor().getAsMention();
 			System.out.println(s);
 		}*/
-		
-		if(args[0].equals("inv")){ //TODO: THIS IS FOR TESTING ONLY
-			DatabaseManager dbm = new DatabaseManager();
-			
-			String sql = "select * from user";
-			
-			try {
-				PreparedStatement ps = dbm.connect().prepareStatement(sql);
-				ResultSet rs = ps.executeQuery();
-				
-				try {
-					while(rs.next()){
-						System.out.println("Something happened.");
-					}
-					event.getChannel().sendMessage(event.getAuthor().getAsMention()).queue();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} finally {
-					ps.close();
-					rs.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				dbm.disconnect(); 
-			}
-		}
-		
-		/*if(cmd.equals("create")) { //create inventory stub
-			//file name is BaseDirPath/Server_Id/Author_Id/name
-			String server = event.getGuild().getId();
-			String name = event.getAuthor().getName();
-			String disc = event.getAuthor().getDiscriminator();
-			String baseDir = System.getProperty("user.dir");
-			String path = baseDir + "/invs/" + server + "/" + name + disc;
-			
-			
-			try {
-				Files.createDirectories(Paths.get(path));
-				
-				event.getChannel().sendMessage(ec.BuildSimpleEmbed(event, "Empty Inventory Created", 
-						"Now tracking inventory for " + event.getMember().getNickname())).queue();
-				
-				File f = new File(path + "/" + name + disc + ".json");
-				f.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		if(cmd.equals("delete")) { //delete inventory stub
-			String server = event.getGuild().getId();
-			String name = event.getAuthor().getName();
-			String disc = event.getAuthor().getDiscriminator();
-			String baseDir = System.getProperty("user.dir");
-			String path = baseDir + "/invs/" + server + "/" + name + disc;
-			
-			try {
-				File f = new File(path + "/" + name + disc + ".json");
-				
-				if(f.delete()){
-					event.getChannel().sendMessage("Inventory system deleted").queue();
-				} else {
-					event.getChannel().sendMessage("You don't have an inventory yet. Use `?create` first.").queue();
-				}
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-		}*/
+	
 	}
+	
+    
+    private String[] parseCommand(String str){
+    	
+    	if(str.contains("-")){
+			StringTokenizer st = new StringTokenizer(str, "-");
+			parsed = new String[st.countTokens()];
+			int i = 0;
+			while(st.hasMoreTokens()){
+				parsed[i++] = st.nextToken();
+			}
+
+			parsed[0] = parsed[0].trim();
+			
+    	} else {
+    		parsed = str.split("\\s+");
+    	}
+
+		return parsed;
+    }
+	
 	/*
 	 if (msg.equals("?ping"))
     {
