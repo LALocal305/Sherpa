@@ -27,9 +27,9 @@ public class CommandParser {
 
 		if(parsed[0].contains(" ")) {
 			command = parsed[0].substring(0, parsed[0].indexOf(" ")+1).trim(); 
+		} else {
+			command = parsed[0];
 		}
-		
-		System.out.println("Command: " + command);
 		
 		if(command.equals("user") || command.equals("u")){
 			uc.onCommand(event, parsed, command);

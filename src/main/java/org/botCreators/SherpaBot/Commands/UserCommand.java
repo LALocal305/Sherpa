@@ -63,7 +63,7 @@ public class UserCommand extends Command {
 				try (PreparedStatement ps = dbm.connect().prepareStatement(sql);){
 					
 					ps.setString(1, nn);
-					ps.setString(2,  name);
+					ps.setString(2, name);
 					ps.setString(3, disc);
 					
 					ps.executeUpdate();
@@ -140,10 +140,13 @@ public class UserCommand extends Command {
 		DatabaseManager dbm = new DatabaseManager();
 		String name = event.getAuthor().getName();
 		
-		String sql = "select * from user where "+ TableCols.USER_DN + " = '" + name + "' and "+ TableCols.USER_NN + " = '" + argMap.get("n") +"'" ;
+		//String sql = "select * from user where "+ TableCols.USER_DN + " = '" + name + "' and "+ TableCols.USER_NN + " = '" + argMap.get("n") +"'" ;
+		String sql = TableCols.checkForUser;
 		
 		try (PreparedStatement ps = dbm.connect().prepareStatement(sql);
 				ResultSet rs = ps.executeQuery();){
+			ps.setString(1, name.toLowerCase());
+			ps.setString(2, argMap.get("n").toLowerCase());
 
 			int rowcount = 0;
 			if (rs.last()){
