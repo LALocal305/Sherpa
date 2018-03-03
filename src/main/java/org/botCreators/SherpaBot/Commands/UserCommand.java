@@ -82,11 +82,25 @@ public class UserCommand extends Command {
 			event.getChannel().sendMessage("A name was not provided. Try adding `-name Your Name` after the command.").queue();
 		}
 	}
-	
+	/**
+	 * Method to delete a character from the user's profile. Sends a message
+	 * back to the originating channel with the success or failure of the delete.
+	 * 
+	 * @param event - The event received for the current transaction
+	 * @param args - The String array that contains the command and arguments
+	 */
 	private void delete(MessageReceivedEvent event, String[] args){
 		
 	}
 	
+	/**
+	 * Method to modify character settings. Settings such as color of embeds, name,
+	 * and potentially others. Sends a message back to the originating channel with
+	 * a success or failure to modify message.
+	 * 
+	 * @param event
+	 * @param args
+	 */
 	private void mod(MessageReceivedEvent event, String[] args){
 		
 	}
@@ -99,13 +113,12 @@ public class UserCommand extends Command {
 	 * @param args - The String array that contains the command and arguments
 	 */
 	private void parseArgs(String[] args){
-		if(args.length > 1) {
-			for(int i = 0; i < args.length; i++){
-				String temp[] = args[i].split(" ", 2);
-				
-				if(temp.length > 1){
-					argMap.put(temp[0], (temp[1].charAt(temp[1].length() -1) == ' ' ? temp[1].substring(0, temp[1].length() -1) : temp[1].substring(0, temp[1].length())));
-				}
+		for(int i = 0; i < args.length; i++){
+			String temp[] = args[i].split(" ", 2);
+			
+			if(temp.length > 1){
+				temp[1] = temp[1].trim();
+				argMap.put(temp[0], temp[1]);
 			}
 		}
 	}
