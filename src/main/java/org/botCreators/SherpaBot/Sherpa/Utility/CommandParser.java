@@ -46,6 +46,8 @@ public class CommandParser {
 			Message message = event.getMessage();
 			MessageChannel channel = event.getChannel();
 			
+			event.getChannel().sendMessage("I've sent help to your PMs.").queue();
+			
 			author.openPrivateChannel().queue( 
 					pChannel -> {
 						pChannel.sendMessage(author.getName() + ", this is obviously not working.").queue();
@@ -56,10 +58,10 @@ public class CommandParser {
 
 	}
     
-    private String[] parseCommand(String str){
+    private String[] parseCommand(String args){
     	
-    	if(str.contains("-")){
-			StringTokenizer st = new StringTokenizer(str, "-"); //use split instead
+    	if(args.contains("-")){
+			StringTokenizer st = new StringTokenizer(args, "-"); //use split instead
 			parsed = new String[st.countTokens()];
 			int i = 0;
 			while(st.hasMoreTokens()){
@@ -69,7 +71,8 @@ public class CommandParser {
 			parsed[0] = parsed[0].trim();
 			
     	} else {
-    		parsed = str.split("\\s+");
+    		//parsed = str.split("\\s+");
+    		parsed = new String[] {args.trim()};
     	}
 
 		return parsed;

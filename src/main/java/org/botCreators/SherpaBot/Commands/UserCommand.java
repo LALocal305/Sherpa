@@ -19,8 +19,6 @@ public class UserCommand extends Command {
 		
 		argMap = new HashMap<>();
 		this.parseArgs(args);
-
-		printArray(args);
 		
 		if(argMap.containsKey(command)){
 			if(argMap.get(command).equals("create") || argMap.get(command).equals("c") ){
@@ -44,44 +42,66 @@ public class UserCommand extends Command {
 	 * @param args - The String array that contains the command and arguments
 	 */
 	private void create(MessageReceivedEvent event, String[] args){
-		System.out.print("create: ");printArray(args);
+		//System.out.print("create: ");printArray(args);
+		if(!userExists(event)){
+			DatabaseManager dbm = new DatabaseManager();
+			String id = event.getAuthor().getId();
+			
+			String sql = TableCols.INSERT_NEW_USER;
+			
+			try (PreparedStatement ps = dbm.connect().prepareStatement(sql);) {
+				
+				ps.setString(1, id);
+				
+				ps.executeUpdate();
+				
+				event.getChannel().sendMessage("User created successfully.").queue();
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				event.getChannel().sendMessage("User unable to be created.").queue();
+			} finally {
+				dbm.disconnect();
+			}
+			
+		} 
+		
 		if(argMap.containsKey("n")){
-			if(userExists(event)){
+			if(charExists(event)){
 				//Send Message that user already exists.
 				event.getChannel().sendMessage("A character with the name `" + argMap.get("n") + "` already exists.").queue();
 			} else {
 				//Create a new user in the database.
 				
 				DatabaseManager dbm = new DatabaseManager();
-				String name = event.getAuthor().getName();
-				String disc = event.getAuthor().getDiscriminator();
+				String id = event.getAuthor().getId();
 				String nn = argMap.get("n");
 				
-				String sql = "INSERT INTO USER (" + TableCols.USER_NN + "," + TableCols.USER_DN + "," + TableCols.USER_DD + 
-						") VALUES (?,?,?) " ;
+				String sql = TableCols.INSERT_NEW_CHAR;
 				
 				try (PreparedStatement ps = dbm.connect().prepareStatement(sql);){
 					
 					ps.setString(1, nn);
-					ps.setString(2, name);
-					ps.setString(3, disc);
+					ps.setString(2, id);
 					
 					ps.executeUpdate();
 					
-					event.getChannel().sendMessage("User created successfully.").queue();
+					event.getChannel().sendMessage("Character `"+ nn +"` created successfully.").queue();
 					
 				} catch (SQLException e) {
 					e.printStackTrace();
-					event.getChannel().sendMessage("User unable to be created.").queue();
+					event.getChannel().sendMessage("Character `" + nn + "` unable to be created.").queue();
 				} finally {
 					dbm.disconnect(); 
 				}
 				
 			}
 		} else {
-			event.getChannel().sendMessage("A name was not provided. Try adding `-name Your Name` after the command.").queue();
+			event.getChannel().sendMessage("To create a character for this user try adding `-n Your Character Name` to your request.").queue();
 		}
+		
 	}
+	
 	/**
 	 * Method to delete a character from the user's profile. Sends a message
 	 * back to the originating channel with the success or failure of the delete.
@@ -125,11 +145,11 @@ public class UserCommand extends Command {
 	
 	private void printArray(String[] arr) {
 		for (int i = 0; i < arr.length; i++) 
-			System.out.println(arr[i]);
+			System.out.println(i + " " + arr[i]);
 	}
 	
 	/**
-	 * Method for checking the database for a duplicate nickname for the current user.
+	 * Method for checking the database for an existing user.
 	 * 
 	 * @param event - The event received for the current transaction
 	 * @return - False if the user does not exist; True if the user exists.
@@ -138,16 +158,15 @@ public class UserCommand extends Command {
 		boolean foundUser = false;
 		
 		DatabaseManager dbm = new DatabaseManager();
-		String name = event.getAuthor().getName();
-		
-		//String sql = "select * from user where "+ TableCols.USER_DN + " = '" + name + "' and "+ TableCols.USER_NN + " = '" + argMap.get("n") +"'" ;
-		String sql = TableCols.checkForUser;
-		
-		try (PreparedStatement ps = dbm.connect().prepareStatement(sql);
-				ResultSet rs = ps.executeQuery();){
-			ps.setString(1, name.toLowerCase());
-			ps.setString(2, argMap.get("n").toLowerCase());
+		String id = event.getAuthor().getId();
+		String sql = TableCols.CHECK_FOR_USER;
 
+		try (PreparedStatement ps = dbm.connect().prepareStatement(sql);){
+			
+			ps.setString(1, id);
+
+			ResultSet rs = ps.executeQuery();
+					
 			int rowcount = 0;
 			if (rs.last()){
 				rowcount = rs.getRow();
@@ -169,10 +188,44 @@ public class UserCommand extends Command {
 		return foundUser;
 	}
 	
-	private String findNickname(String[] args){
-		String name = null;
+	/**
+	 * Method for checking the database for a duplicate nickname for the current user.
+	 * 
+	 * @param event - The event received for the current transaction
+	 * @return - False if the char does not exist; True if the char exists.
+	 */
+	private boolean charExists(MessageReceivedEvent event){
+		boolean foundChar = false;
 		
-		return name;
+		DatabaseManager dbm = new DatabaseManager();
+		String id = event.getAuthor().getId();
+		String sql = TableCols.CHECK_FOR_CHAR;
+
+		try (PreparedStatement ps = dbm.connect().prepareStatement(sql);){
+			ps.setString(1, id);
+			ps.setString(2, argMap.get("n").toLowerCase());
+
+			ResultSet rs = ps.executeQuery();
+			
+			int rowcount = 0;
+			if (rs.last()){
+				rowcount = rs.getRow();
+				rs.beforeFirst();
+			}
+			
+			if (rowcount == 0) {
+				foundChar = false;
+			} else {
+				foundChar = true;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			dbm.disconnect(); 
+		}
+		
+		return foundChar;
 	}
 
 	@Override
